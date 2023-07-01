@@ -73,14 +73,16 @@ final class MovieQuizViewController: UIViewController {
     
     // MARK: - Lifecycle
     
-    @IBOutlet private weak var questionTitleLabel: UILabel!
-    @IBOutlet private weak var counterLabel: UILabel!
-    @IBOutlet private weak var imageView: UIImageView!
-    @IBOutlet private weak var questionLabel: UILabel!
+    @IBOutlet weak var questionTitleLabel: UILabel!
+    @IBOutlet weak var counterLabel: UILabel!
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var questionLabel: UILabel!
+    @IBOutlet weak var yesButton: UIButton!
+    @IBOutlet weak var noButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageView.layer.cornerRadius = 20
+        screenStyle()
         show(quiz: convert(model: questions[currentQuestionIndex]))
     }
     
@@ -94,20 +96,11 @@ final class MovieQuizViewController: UIViewController {
         showAnswerResult(isCorrect: userAnswer)
       
     }
-    
-    
-    
     private func showAnswerResult(isCorrect: Bool){
         if isCorrect == true{
             correctAnswers += 1
         }
-        
-        imageView.layer.masksToBounds = true
-        imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        imageView.layer.cornerRadius = 20
-        
-        
+        imageViewBorderStyle(result: isCorrect)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.imageView.layer.borderWidth = 0
             self.showNextQuestionOrResult()
@@ -149,11 +142,9 @@ final class MovieQuizViewController: UIViewController {
                           question: model.text,
                           questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
     }
-    
-   
-    
-    
 }
+
+
 
 /*
  Mock-данные

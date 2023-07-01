@@ -46,7 +46,7 @@
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Рейтинг этого фильма меньше, чем 5?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qhg-OS-pSb" userLabel="Question Label">
                                         <rect key="frame" x="0.0" y="566.66666666666663" width="335" height="71.333333333333371"/>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="23"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="23"/>
                                         <color key="textColor" name="YP White"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -61,11 +61,6 @@
                                                 <state key="normal" title="Нет">
                                                     <color key="titleColor" name="YP Black"/>
                                                 </state>
-                                                <userDefinedRuntimeAttributes>
-                                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                        <integer key="value" value="15"/>
-                                                    </userDefinedRuntimeAttribute>
-                                                </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="noButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Irg-P9-gkl"/>
                                                 </connections>
@@ -78,11 +73,6 @@
                                                 <state key="normal" title="Да">
                                                     <color key="titleColor" name="YP Black"/>
                                                 </state>
-                                                <userDefinedRuntimeAttributes>
-                                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                        <integer key="value" value="15"/>
-                                                    </userDefinedRuntimeAttribute>
-                                                </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="yesButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="aw6-Ru-0PG"/>
                                                 </connections>
@@ -107,8 +97,10 @@
                     <connections>
                         <outlet property="counterLabel" destination="AFP-IS-kdP" id="4sj-6t-7Pg"/>
                         <outlet property="imageView" destination="cnW-o7-JY0" id="rlR-vw-RFo"/>
+                        <outlet property="noButton" destination="Dmf-h7-ajF" id="6p6-7a-W0T"/>
                         <outlet property="questionLabel" destination="qhg-OS-pSb" id="fdK-bo-xj2"/>
                         <outlet property="questionTitleLabel" destination="dh1-K2-o3r" id="d1l-D4-uDR"/>
+                        <outlet property="yesButton" destination="dgd-fu-BaY" id="Cix-WZ-5jK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
