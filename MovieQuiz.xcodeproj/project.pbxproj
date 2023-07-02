@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8484144A2A503E56005A9B6C /* MovieQuizViewController+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848414492A503E56005A9B6C /* MovieQuizViewController+Style.swift */; };
 		84DD117F2A505100000D9EF1 /* YS Display-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 84DD117D2A505100000D9EF1 /* YS Display-Medium.ttf */; };
 		84DD11802A505100000D9EF1 /* YS Display-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 84DD117E2A505100000D9EF1 /* YS Display-Bold.ttf */; };
 		AD1ABAB22831907B00B3E448 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1ABAB12831907B00B3E448 /* AppDelegate.swift */; };
@@ -22,7 +21,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		848414492A503E56005A9B6C /* MovieQuizViewController+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MovieQuizViewController+Style.swift"; sourceTree = "<group>"; };
 		84DD117D2A505100000D9EF1 /* YS Display-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Medium.ttf"; sourceTree = "<group>"; };
 		84DD117E2A505100000D9EF1 /* YS Display-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Bold.ttf"; sourceTree = "<group>"; };
 		AD1ABAAE2831907B00B3E448 /* MovieQuiz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MovieQuiz.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,7 +60,6 @@
 			isa = PBXGroup;
 			children = (
 				AD1ABAB52831907B00B3E448 /* MovieQuizViewController.swift */,
-				848414492A503E56005A9B6C /* MovieQuizViewController+Style.swift */,
 				AD1ABAB72831907B00B3E448 /* Main.storyboard */,
 			);
 			path = Presentation;
@@ -193,7 +190,6 @@
 			files = (
 				AD5EE5DE284D7887003966EF /* UIColor+Extensions.swift in Sources */,
 				AD7AFA552836189F00399704 /* Array+Extensions.swift in Sources */,
-				8484144A2A503E56005A9B6C /* MovieQuizViewController+Style.swift in Sources */,
 				AD1ABAB62831907B00B3E448 /* MovieQuizViewController.swift in Sources */,
 				AD77F5742857F8810062FB14 /* Date+Extensions.swift in Sources */,
 				AD1ABAB22831907B00B3E448 /* AppDelegate.swift in Sources */,
