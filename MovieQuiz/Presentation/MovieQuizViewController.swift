@@ -101,12 +101,12 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showAnswerResult(isCorrect: Bool) {
-        if isCorrect == true{
+        if isCorrect {
             correctAnswers += 1
         }
-        imageViewBorderStyle(result: isCorrect)
+        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.imageView.layer.borderWidth = 0
+            self.imageView.layer.borderColor = UIColor.clear.cgColor
             self.showNextQuestionOrResult()
             self.buttonsIsEnabled()
         }
@@ -158,52 +158,53 @@ final class MovieQuizViewController: UIViewController {
                           questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
     }
     
-    func screenStyle() {
+    private func screenStyle() {
         viewStyle()
         questionTitleLabelStyle()
         counterLabelStyle()
         imageViewStyle()
+        imageViewBorderStyle()
         questionLabelStyle()
         yesButtonStyle()
         noButtonStyle()
     }
     
-    func viewStyle(){
+    private func viewStyle(){
         view.backgroundColor = .ypBlack
     }
     
-    func questionTitleLabelStyle() {
+    private func questionTitleLabelStyle() {
         questionTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
         questionTitleLabel.textColor = .ypWhite
     }
     
-    func counterLabelStyle() {
+    private func counterLabelStyle() {
         counterLabel.font = UIFont(name: "YSDisplay-Medium", size: 20)
         counterLabel.textColor = .ypWhite
     }
     
-    func imageViewStyle() {
+    private func imageViewStyle() {
         imageView.layer.cornerRadius = 20
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = .ypWhite
     }
     
-    func questionLabelStyle() {
+    private func questionLabelStyle() {
         questionLabel.textColor = .ypWhite
         questionLabel.font = UIFont(name: "YSDisplay-Bold", size: 23)
         questionLabel.numberOfLines = 2
         questionLabel.textAlignment = .center
     }
     
-    func yesButtonStyle() {
+    private func yesButtonStyle() {
         yesButton.setTitle("Да", for: .normal)
         yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
         yesButton.setTitleColor(.ypBlack, for: .normal)
         yesButton.layer.cornerRadius = 15
         yesButton.backgroundColor = .ypWhite
-       
+        
     }
-    func noButtonStyle() {
+    private func noButtonStyle() {
         noButton.setTitle("Нет", for: .normal)
         noButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20)
         noButton.setTitleColor(.ypBlack, for: .normal)
@@ -212,10 +213,10 @@ final class MovieQuizViewController: UIViewController {
         
     }
     
-    func imageViewBorderStyle(result isCorrect: Bool) {
+    private func imageViewBorderStyle() {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        imageView.layer.borderColor = UIColor.clear.cgColor
         imageView.layer.cornerRadius = 20
     }
 }
