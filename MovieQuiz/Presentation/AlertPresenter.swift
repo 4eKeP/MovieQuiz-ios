@@ -7,19 +7,26 @@
 
 import UIKit
 
-class AlertPresenter: AlertFactoryProtocol {
-    weak var delegate: AlertFactoryDelegate?
+class AlertPresenter {
     
-    private func show(result: AlertModel) {
-        
-        let alert = UIAlertController(title: result.title, message: result.text, preferredStyle: .alert)
-        let action = UIAlertAction(title: result.buttonText, style: .default){ [weak self] _ in
-            guard let self = self else { return }
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            self.questionFactory?.requestNextQuestion()
+    private weak var viewController: UIViewController?
+    
+    init(viewController: UIViewController) {
+        self.viewController = viewController
+    }
+    
+    func requestAlert(alertModel: AlertModel) {
+        let alert = UIAlertController(title: alertModel.title,
+                                      message: alertModel.text,
+                                      preferredStyle: .alert)
+        let action = UIAlertAction(title: alertModel.buttonText, style: .default) { _ in
+            alertModel.completion?()
         }
         alert.addAction(action)
-        self.present(alert, animated: true)
+        
+        guard let viewController = viewController else {return}
+        viewController.present(alert, animated: true)
     }
+    
+    
 }

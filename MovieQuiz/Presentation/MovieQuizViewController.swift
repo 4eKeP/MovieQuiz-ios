@@ -9,6 +9,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
+    
+    private var alertPresenter: AlertPresenter?
 
     // MARK: - Lifecycle
     
@@ -22,6 +24,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         screenStyle()
+        alertPresenter = AlertPresenter(viewController: self)
         questionFactory = QuestionFactory(delegate: self)
         questionFactory?.requestNextQuestion()
     }
@@ -56,6 +59,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - Private functions
     
+    private func restartQuiz() {
+        currentQuestionIndex = 0
+        correctAnswers = 0
+        questionFactory?.requestNextQuestion()
+    }
+    
     private func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
@@ -84,25 +93,29 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             let result = QuizResultsViewModel(title: "Этот раунд окончен!",
                                               text: "ваш результат \(correctAnswers)/\(questionsAmount)",
                                               buttonText: "Сыграть еще раз?")
-            show(quiz: result)
+            //дописать так что бы данные отправлялись в презентер и не приходилось тут создавать модель
+            let alertModel = AlertModel(title: result.title, text: result.text, buttonText: result.buttonText){
+                [weak self] in self?.restartQuiz()
+            }
+            alertPresenter?.requestAlert(alertModel: alertModel)
         }else{
             currentQuestionIndex += 1
             questionFactory?.requestNextQuestion()
         }
     }
     
-    private func show(quiz result: QuizResultsViewModel) {
-        
-        let alert = UIAlertController(title: result.title, message: result.text, preferredStyle: .alert)
-        let action = UIAlertAction(title: result.buttonText, style: .default){ [weak self] _ in
-            guard let self = self else { return }
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            self.questionFactory?.requestNextQuestion()
-        }
-        alert.addAction(action)
-        self.present(alert, animated: true)
-    }
+//    private func showAlert(quiz result: QuizResultsViewModel) {
+//
+//        let alert = UIAlertController(title: result.title, message: result.text, preferredStyle: .alert)
+//        let action = UIAlertAction(title: result.buttonText, style: .default){ [weak self] _ in
+//            guard let self = self else { return }
+//            self.currentQuestionIndex = 0
+//            self.correctAnswers = 0
+//            self.questionFactory?.requestNextQuestion()
+//        }
+//        alert.addAction(action)
+//        self.present(alert, animated: true)
+//    }
     
     private func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
