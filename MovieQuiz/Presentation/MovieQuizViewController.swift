@@ -5,11 +5,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
-    
     private let questionsAmount: Int = 10
+    
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
-    
+    private var statisticService: StatisticService = StatisticServiceImplementation()
     private var alertPresenter: AlertPresenter?
 
     // MARK: - Lifecycle
@@ -90,11 +90,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func showNextQuestionOrResult() {
         if currentQuestionIndex == questionsAmount - 1 {
-            let result = QuizResultsViewModel(title: "Этот раунд окончен!",
-                                              text: "ваш результат \(correctAnswers)/\(questionsAmount)",
-                                              buttonText: "Сыграть еще раз?")
+            
+            statisticService.store(correct: correctAnswers, total: questionsAmount)
+            let title = "Этот раунд окончен"
+            let messageResult = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
+            let messageCount = "Количество сыгранных квизов: \(statisticService.gamesCount)"
+            let messageRecord = "Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total)(\(statisticService.bestGame.date.dateTimeString))"
+            let messageTotalAccuracy = "Среедняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
+            let message = [messageResult, messageCount, messageRecord, messageTotalAccuracy].joined(separator: "\n")
+            let buttonText = "Сыграть еще раз?"
+            
             //дописать так что бы данные отправлялись в презентер и не приходилось тут создавать модель
-            let alertModel = AlertModel(title: result.title, text: result.text, buttonText: result.buttonText){
+            let alertModel = AlertModel(title: title, text: message, buttonText: buttonText){
                 [weak self] in self?.restartQuiz()
             }
             alertPresenter?.requestAlert(alertModel: alertModel)
@@ -103,19 +110,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             questionFactory?.requestNextQuestion()
         }
     }
-    
-//    private func showAlert(quiz result: QuizResultsViewModel) {
-//
-//        let alert = UIAlertController(title: result.title, message: result.text, preferredStyle: .alert)
-//        let action = UIAlertAction(title: result.buttonText, style: .default){ [weak self] _ in
-//            guard let self = self else { return }
-//            self.currentQuestionIndex = 0
-//            self.correctAnswers = 0
-//            self.questionFactory?.requestNextQuestion()
-//        }
-//        alert.addAction(action)
-//        self.present(alert, animated: true)
-//    }
     
     private func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image

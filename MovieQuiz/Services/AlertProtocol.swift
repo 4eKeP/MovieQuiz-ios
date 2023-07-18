@@ -8,5 +8,5 @@
 import Foundation
 
 protocol AlertProtocol {
-    func requestAlert()
+    func requestAlert(alertModel: AlertModel)
 }
