@@ -93,11 +93,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             
             statisticService.store(correct: correctAnswers, total: questionsAmount)
             let title = "Этот раунд окончен"
-            let messageResult = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
-            let messageCount = "Количество сыгранных квизов: \(statisticService.gamesCount)"
-            let messageRecord = "Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total)(\(statisticService.bestGame.date.dateTimeString))"
-            let messageTotalAccuracy = "Среедняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
-            let message = [messageResult, messageCount, messageRecord, messageTotalAccuracy].joined(separator: "\n")
+            let message = """
+            Ваш результат: \(correctAnswers)/\(questionsAmount)
+            Количество сыгранных квизов: \(statisticService.gamesCount)
+            Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total)(\(statisticService.bestGame.date.dateTimeString))
+            Среедняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
+            """
             let buttonText = "Сыграть еще раз?"
             
             //дописать так что бы данные отправлялись в презентер и не приходилось тут создавать модель
