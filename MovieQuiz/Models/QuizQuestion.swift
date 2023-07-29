@@ -9,7 +9,7 @@ import Foundation
 
 struct QuizQuestion {
     //название картинки(фильма) из assets
-    let image: String
+    let image: Data
     //строка с вопросом о рейтинге фильма
     let text: String
     //значение ответа
