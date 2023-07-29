@@ -21,6 +21,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet private weak var questionLabel: UILabel!
     @IBOutlet private weak var yesButton: UIButton!
     @IBOutlet private weak var noButton: UIButton!
+    // для ревьюера, к сожалению получилось сделать белый цвет статус бара только так, способы через info или главные настройки приложения не работают по какой то причине
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setNeedsStatusBarAppearanceUpdate()
+    }
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
