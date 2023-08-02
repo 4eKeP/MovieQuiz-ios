@@ -14,7 +14,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
     // MARK: - Lifecycle
     
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet private weak var questionTitleLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
     @IBOutlet private weak var imageView: UIImageView!
@@ -82,14 +82,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         hideLoadingIndicator()
         let title = "Ошибка"
         let buttonText = "Попробовать ещё раз"
-        let alertModel = AlertModel(title: title, text: message, buttonText: buttonText){
+        let alertModel = AlertModel(title: title,
+                                    text: message,
+                                    buttonText: buttonText
             //код для повторной попытки загрузки
-            [weak self] in
+        ){ [weak self] in
             guard let self = self else {return}
-            
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
-            
             self.questionFactory?.requestNextQuestion()
         }
         alertPresenter?.requestAlert(alertModel: alertModel)
@@ -102,7 +102,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func hideLoadingIndicator() {
         activityIndicator.isHidden = true
-        
     }
     
     private func restartQuiz() {
