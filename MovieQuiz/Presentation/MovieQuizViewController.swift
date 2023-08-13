@@ -82,9 +82,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         hideLoadingIndicator()
         let title = "Ошибка"
         let buttonText = "Попробовать ещё раз"
+        let alertId = "NetworkError"
         let alertModel = AlertModel(title: title,
                                     text: message,
-                                    buttonText: buttonText
+                                    buttonText: buttonText,
+                                    alertId: alertId
             //код для повторной попытки загрузки
         ){ [weak self] in
             guard let self = self else {return}
@@ -145,9 +147,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             Среедняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
             """
             let buttonText = "Сыграть еще раз?"
-            
+            let alertId = "GameResult"
             //дописать так что бы данные отправлялись в презентер и не приходилось тут создавать модель
-            let alertModel = AlertModel(title: title, text: message, buttonText: buttonText){
+            let alertModel = AlertModel(title: title, text: message, buttonText: buttonText, alertId: alertId){
                 [weak self] in self?.restartQuiz()
             }
             alertPresenter?.requestAlert(alertModel: alertModel)
