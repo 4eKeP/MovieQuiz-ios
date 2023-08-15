@@ -32,6 +32,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         screenStyle()
+        quizPresenter.viewController = self
         alertPresenter = AlertPresenter(viewController: self)
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         showLoadingIndicator()
@@ -61,18 +62,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Actions
     
     @IBAction private func noButtonPressed(_ sender: UIButton) {
-        buttonsIsDisabled()
-        guard let currentQuestion = currentQuestion else {return}
-        let userAnswer = currentQuestion.correctAnswer == false
-        showAnswerResult(isCorrect: userAnswer)
+        quizPresenter.buttonsIsDisabled(noButton: noButton, yesButton: yesButton)
+        quizPresenter.currentQuestion = currentQuestion
+        quizPresenter.noButtonPressed()
     }
     
     @IBAction private func yesButtonPressed(_ sender: UIButton) {
-        buttonsIsDisabled()
-        guard let currentQuestion = currentQuestion else {return}
-        let userAnswer = currentQuestion.correctAnswer == true
-        showAnswerResult(isCorrect: userAnswer)
-        
+        quizPresenter.buttonsIsDisabled(noButton: noButton, yesButton: yesButton)
+        quizPresenter.currentQuestion = currentQuestion
+        quizPresenter.yesButtonPressed()
     }
     
     // MARK: - Private functions
@@ -111,7 +109,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionFactory?.requestNextQuestion()
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
         }
@@ -124,16 +122,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    private func buttonsIsDisabled(){
-        noButton.isEnabled = false
-        yesButton.isEnabled = false
-    }
-    
     private func buttonsIsEnabled(){
         noButton.isEnabled = true
         yesButton.isEnabled = true
     }
-    
+    //
     private func showNextQuestionOrResult() {
         if quizPresenter.isLastQuestuion() {
             
