@@ -1,18 +1,14 @@
 import UIKit
 
-
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private var correctAnswers = 0
     
     private var questionFactory: QuestionFactoryProtocol?
-    private var currentQuestion: QuizQuestion?
     private var statisticService: StatisticService = StatisticServiceImplementation()
-    private var alertPresenter: AlertPresenter?
+    private var alertPresenter = AlertPresenter()
     private let quizPresenter = MovieQuizPresenter()
 
-    // MARK: - Lifecycle
-    
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet private weak var questionTitleLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
@@ -20,11 +16,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet private weak var questionLabel: UILabel!
     @IBOutlet private weak var yesButton: UIButton!
     @IBOutlet private weak var noButton: UIButton!
-    // для ревьюера, к сожалению получилось сделать белый цвет статус бара только так, способы через info или главные настройки приложения не работают по какой то причине
+    
+    // MARK: - Lifecycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setNeedsStatusBarAppearanceUpdate()
     }
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
     }
@@ -33,7 +31,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         super.viewDidLoad()
         screenStyle()
         quizPresenter.viewController = self
-        alertPresenter = AlertPresenter(viewController: self)
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         showLoadingIndicator()
         questionFactory?.loadData()
@@ -42,12 +39,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - QuestionFactoryDelegate
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else { return }
-        currentQuestion = question
-        let viewModel = quizPresenter.convert(model: question)
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
-        }
+        quizPresenter.didReceiveNextQuestion(question: question)
     }
     
     func didLoadDataFromServer() {
@@ -63,13 +55,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     @IBAction private func noButtonPressed(_ sender: UIButton) {
         quizPresenter.buttonsIsDisabled(noButton: noButton, yesButton: yesButton)
-        quizPresenter.currentQuestion = currentQuestion
         quizPresenter.noButtonPressed()
     }
     
     @IBAction private func yesButtonPressed(_ sender: UIButton) {
         quizPresenter.buttonsIsDisabled(noButton: noButton, yesButton: yesButton)
-        quizPresenter.currentQuestion = currentQuestion
         quizPresenter.yesButtonPressed()
     }
     
@@ -91,7 +81,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.correctAnswers = 0
             self.questionFactory?.requestNextQuestion()
         }
-        alertPresenter?.requestAlert(alertModel: alertModel)
+        alertPresenter.requestAlert(in: self, alertModel: alertModel)
     }
     
     private func showLoadingIndicator() {
@@ -102,13 +92,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private func hideLoadingIndicator() {
         activityIndicator.isHidden = true
     }
-    
-    private func restartQuiz() {
+    //
+    func restartQuiz() {
         quizPresenter.resetQuestonIndex()
         correctAnswers = 0
         questionFactory?.requestNextQuestion()
     }
-    
+    //
     func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
@@ -117,44 +107,59 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard let self = self else {return}
             self.imageView.layer.borderColor = UIColor.clear.cgColor
-            self.showNextQuestionOrResult()
-            self.buttonsIsEnabled()
+            self.quizPresenter.correctAnswers = self.correctAnswers
+            self.quizPresenter.questionFactory = self.questionFactory
+            self.quizPresenter.showNextQuestionOrResult()
+            self.quizPresenter.buttonsIsEnabled(noButton: noButton, yesButton: yesButton)
         }
     }
     
-    private func buttonsIsEnabled(){
-        noButton.isEnabled = true
-        yesButton.isEnabled = true
-    }
-    //
-    private func showNextQuestionOrResult() {
-        if quizPresenter.isLastQuestuion() {
-            
-            statisticService.store(correct: correctAnswers, total: quizPresenter.questionsAmount)
-            let title = "Этот раунд окончен"
-            let message = """
-            Ваш результат: \(correctAnswers)/\(quizPresenter.questionsAmount)
-            Количество сыгранных квизов: \(statisticService.gamesCount)
-            Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total)(\(statisticService.bestGame.date.dateTimeString))
-            Среедняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
-            """
-            let buttonText = "Сыграть еще раз?"
-            let alertId = "GameResult"
-            //дописать так что бы данные отправлялись в презентер и не приходилось тут создавать модель
-            let alertModel = AlertModel(title: title, text: message, buttonText: buttonText, alertId: alertId){
-                [weak self] in self?.restartQuiz()
-            }
-            alertPresenter?.requestAlert(alertModel: alertModel)
-        }else{
-            quizPresenter.switchToNextQuestion()
-            questionFactory?.requestNextQuestion()
-        }
-    }
+//    private func showNextQuestionOrResult() {
+//        if quizPresenter.isLastQuestuion() {
+//
+//            let text = "Вы ответили на \(correctAnswers) из 10, попробуйте еще раз!"
+//            
+//            let viewModel = QuizResultsViewModel(title: "Этот раунд окончен!",
+//                                                 text: text,
+//                                                 buttonText: "Сыграть ещё раз")
+//            show(quiz: viewModel)
+//        }else{
+//            quizPresenter.switchToNextQuestion()
+//            questionFactory?.requestNextQuestion()
+//        }
+//    }
     
-    private func show(quiz step: QuizStepViewModel) {
+    func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         questionLabel.text = step.question
         counterLabel.text = step.questionNumber
+    }
+    
+    func show(quiz result: QuizResultsViewModel) {
+        var message = result.text
+        statisticService.store(correct: correctAnswers, total: quizPresenter.questionsAmount)
+        message = """
+        Ваш результат: \(correctAnswers)/\(quizPresenter.questionsAmount)
+        Количество сыгранных квизов: \(statisticService.gamesCount)
+        Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total)(\(statisticService.bestGame.date.dateTimeString))
+        Среедняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
+        """
+        let alertId = "GameResult"
+        
+        let alertModel = AlertModel(title: result.title,
+                                    text: message,
+                                    buttonText: result.buttonText,
+                                    alertId: alertId)
+        {
+            [weak self] in
+            guard let self = self else { return }
+            
+            self.quizPresenter.resetQuestonIndex()
+            self.quizPresenter.correctAnswers = 0
+            
+            self.questionFactory?.requestNextQuestion()
+        }
+        alertPresenter.requestAlert(in: self, alertModel: alertModel)
     }
     
     private func screenStyle() {

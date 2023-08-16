@@ -9,13 +9,7 @@ import UIKit
 
 final class AlertPresenter: AlertProtocol {
     
-    private weak var viewController: UIViewController?
-    
-    init(viewController: UIViewController) {
-        self.viewController = viewController
-    }
-    
-    func requestAlert(alertModel: AlertModel) {
+    func requestAlert(in vc: UIViewController, alertModel: AlertModel) {
         let alert = UIAlertController(title: alertModel.title,
                                       message: alertModel.text,
                                       preferredStyle: .alert)
@@ -25,9 +19,6 @@ final class AlertPresenter: AlertProtocol {
         }
         alert.addAction(action)
         
-        guard let viewController = viewController else {return}
-        viewController.present(alert, animated: true)
+        vc.present(alert, animated: true)
     }
-    
-    
 }

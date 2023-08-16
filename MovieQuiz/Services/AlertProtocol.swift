@@ -5,8 +5,8 @@
 //  Created by admin on 17.07.2023.
 //
 
-import Foundation
+import UIKit
 
 protocol AlertProtocol {
-    func requestAlert(alertModel: AlertModel)
+    func requestAlert(in vc: UIViewController, alertModel: AlertModel)
 }
