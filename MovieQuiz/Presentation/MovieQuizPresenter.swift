@@ -10,15 +10,15 @@ import UIKit
 final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     private var currentQuestionIndex = 0
-    let questionsAmount: Int = 10
-    var correctAnswers: Int = 0
-    
+    private let questionsAmount: Int = 10
+    private var correctAnswers: Int = 0
     private var currentQuestion: QuizQuestion?
-    private weak var viewController: MovieQuizViewController?
+    
+    private weak var viewController: MovieQuizControllerProtocol?
     private var questionFactory: QuestionFactoryProtocol?
     private let statisticService: StatisticService = StatisticServiceImplementation()
     
-    init(viewController: MovieQuizViewController) {
+    init(viewController: MovieQuizControllerProtocol) {
         self.viewController = viewController
         
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
@@ -88,7 +88,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             
             let viewModel = QuizResultsViewModel(title: "Этот раунд окончен!",
                                                  text: text,
-                                                 buttonText: "Сыграть ещё раз")
+                                                 buttonText: "Сыграть ещё раз?")
             viewController?.show(quiz: viewModel)
         }else{
             switchToNextQuestion()
