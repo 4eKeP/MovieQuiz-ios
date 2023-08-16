@@ -7,17 +7,33 @@
 
 import UIKit
 
-final class MovieQuizPresenter {
+final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     private var currentQuestionIndex = 0
     let questionsAmount: Int = 10
     var correctAnswers: Int = 0
     
-    var currentQuestion: QuizQuestion?
-    weak var viewController: MovieQuizViewController?
-    var questionFactory: QuestionFactoryProtocol?
-    private var statisticService: StatisticService = StatisticServiceImplementation()
-    private var alertPresenter: AlertPresenter?
+    private var currentQuestion: QuizQuestion?
+    private weak var viewController: MovieQuizViewController?
+    private var questionFactory: QuestionFactoryProtocol?
+    private let statisticService: StatisticService = StatisticServiceImplementation()
+    
+    init(viewController: MovieQuizViewController) {
+        self.viewController = viewController
+        
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        questionFactory?.loadData()
+        viewController.showLoadingIndicator()
+    }
+
+    func didLoadDataFromServer() {
+        viewController?.hideLoadingIndicator()
+        questionFactory?.requestNextQuestion()
+    }
+
+    func didFaildToLoadData(with error: Error) {
+        viewController?.showNetworkError(message: error.localizedDescription)
+    }
     
     func convert(model: QuizQuestion) -> QuizStepViewModel {
         QuizStepViewModel(image: UIImage(data: model.image) ?? UIImage(),
@@ -47,17 +63,13 @@ final class MovieQuizPresenter {
     private func didAnswer(isYes: Bool){
         guard let currentQuestion = currentQuestion else { return }
         let userAnswer = isYes
-        viewController?.showAnswerResult(isCorrect: userAnswer == currentQuestion.correctAnswer)
+        proceedWithAnswer(isCorrect: userAnswer == currentQuestion.correctAnswer)
     }
     
-    func buttonsIsDisabled(noButton: UIButton, yesButton: UIButton){
-        noButton.isEnabled = false
-        yesButton.isEnabled = false
-    }
-    
-    func buttonsIsEnabled(noButton: UIButton, yesButton: UIButton){
-        noButton.isEnabled = true
-        yesButton.isEnabled = true
+    func didAnswer(isCorrectAnswer: Bool) {
+        if isCorrectAnswer {
+            correctAnswers += 1
+        }
     }
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
@@ -69,8 +81,8 @@ final class MovieQuizPresenter {
         }
     }
     
-    func showNextQuestionOrResult() {
-        if self.isLastQuestuion() {
+    func proceedToNextQuestionOrResult() {
+        if isLastQuestuion() {
 
             let text = "Вы ответили на \(correctAnswers) из 10, попробуйте еще раз!"
             
@@ -79,8 +91,37 @@ final class MovieQuizPresenter {
                                                  buttonText: "Сыграть ещё раз")
             viewController?.show(quiz: viewModel)
         }else{
-            self.switchToNextQuestion()
+            switchToNextQuestion()
             questionFactory?.requestNextQuestion()
+        }
+    }
+    
+    func restartQuiz() {
+        resetQuestonIndex()
+        correctAnswers = 0
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func makeResultMessage() -> String {
+        statisticService.store(correct: correctAnswers, total: questionsAmount)
+        let message = """
+        Ваш результат: \(correctAnswers)/\(questionsAmount)
+        Количество сыгранных квизов: \(statisticService.gamesCount)
+        Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total)(\(statisticService.bestGame.date.dateTimeString))
+        Среедняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
+        """
+        return message
+    }
+    
+    func proceedWithAnswer(isCorrect: Bool) {
+        
+        didAnswer(isCorrectAnswer: isCorrect)
+        
+        viewController?.highlightImageBorder(isCorrect: isCorrect)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard let self = self else {return}
+            self.proceedToNextQuestionOrResult()
         }
     }
 }
