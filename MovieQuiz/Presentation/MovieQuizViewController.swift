@@ -89,8 +89,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizControllerProtoc
                                     text: message,
                                     buttonText: result.buttonText,
                                     alertId: alertId)
-        {
-            [weak self] in
+        { [weak self] in
             guard let self = self else { return }
             
             self.quizPresenter.restartQuiz()
@@ -98,12 +97,12 @@ final class MovieQuizViewController: UIViewController, MovieQuizControllerProtoc
         alertPresenter.requestAlert(in: self, alertModel: alertModel)
     }
     
-    func buttonsIsDisabled(){
+    func buttonsIsDisabled() {
         noButton.isEnabled = false
         yesButton.isEnabled = false
     }
     
-    func buttonsIsEnabled(){
+    func buttonsIsEnabled() {
         noButton.isEnabled = true
         yesButton.isEnabled = true
     }
@@ -119,7 +118,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizControllerProtoc
         noButtonStyle()
     }
     
-    private func viewStyle(){
+    private func viewStyle() {
         view.backgroundColor = .ypBlack
     }
     

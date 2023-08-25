@@ -90,7 +90,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
                                                  text: text,
                                                  buttonText: "Сыграть ещё раз?")
             viewController?.show(quiz: viewModel)
-        }else{
+        } else {
             switchToNextQuestion()
             questionFactory?.requestNextQuestion()
         }
